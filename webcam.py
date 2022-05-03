@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import mediapipe as mp
+import math
 
 
 mp_drawing = mp.solutions.drawing_utils
@@ -26,11 +27,15 @@ with mp_pose.Pose(
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = pose.process(image)
     nose= results.pose_landmarks.landmark[0]
-    print(nose)
-
+    wrist= results.pose_landmarks.landmark[19]
+    distance=math.dist([nose.x, nose.y],[wrist.x, wrist.y])
+    print(distance)
     # Draw the pose annotation on the image.
     image.flags.writeable = True
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    if distance <0.44:
+    	image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    else:
+    	image= cv2.cvtColor(image, cv2.COLOR_RGB2HSV)	
     mp_drawing.draw_landmarks(
         image,
         results.pose_landmarks,
